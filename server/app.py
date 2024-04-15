@@ -15,6 +15,11 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 
+@app.route('/')
+def index():
+    return 'Welcome to my Flask application!'
+
+
 @app.route('/clear')
 def clear_session():
     session['page_views'] = 0
@@ -22,13 +27,18 @@ def clear_session():
 
 @app.route('/articles')
 def index_articles():
-
     pass
 
 @app.route('/articles/<int:id>')
 def show_article(id):
+    session['page_views'] = session.get('page_views', 0) + 1
+    if session['page_views'] <= 3:
+        # Return article data
+        return {'message': f'Article {id} viewed successfully'}, 200
+    else:
+        # Return error message for exceeding page view limit
+        return {'message': 'Maximum page view limit reached'}, 401
 
-    pass
 
 if __name__ == '__main__':
     app.run(port=5555)
